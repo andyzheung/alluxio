@@ -120,6 +120,16 @@ COPY --from=csi-dev /usr/local/bin/alluxio-csi /usr/local/bin/
 
 RUN ./dockerfile-common.sh enable-dynamic-user ${ENABLE_DYNAMIC_USER}
 
+#wget cephfs lib
+COPY ./ceph.repo /etc/yum.repos.d/ceph.repo 
+RUN yum makecache && \
+    yum install -y epel-release && \
+	yum install -y cephfs-java 
+RUN ln -s /usr/lib64/libcephfs_jni.so.1.0.0 /usr/lib64/libcephfs_jni.so && \
+    ln -s /usr/lib64/libcephfs.so.2.0.0 /usr/lib64/libcephfs.so && \
+    ln -s /usr/share/java/libcephfs.jar ${JAVA_HOME}/jre/lib/ext/libcephfs.jar
+#end of cephfs
+
 USER ${ALLUXIO_UID}
 
 WORKDIR /opt/alluxio
